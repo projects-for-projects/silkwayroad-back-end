@@ -27,7 +27,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_stuff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = ['first_name', 'last_name',]
 
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
