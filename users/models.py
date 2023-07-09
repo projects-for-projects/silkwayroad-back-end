@@ -3,34 +3,34 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 
 class UserAccountManager(BaseUserManager):
-
-    def create(self, email, first_name, last_name, password=None):
+    def create_user(self, email, password=None, **extra_fields):
         if not email:
-            raise ValueError('email is required!')
+            raise ValueError('Users must have an email address')
 
         email = self.normalize_email(email)
-        user = self.model(email=email, first_name=first_name, last_name=last_name)
+        user = self.model(email=email, **extra_fields)
 
-        user.set_pasword(password)
+        user.set_password(password)
         user.save()
 
         return user
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
-
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-
     is_active = models.BooleanField(default=True)
-    is_stuff = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def get_full_name(self):
-        return f'{self.first_name} {self.last_name}'
+        return self.first_name
 
     def __str__(self):
-        return f'{self.email}'
+        return self.email
+    
