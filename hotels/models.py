@@ -1,4 +1,7 @@
 from django.db import models
+from django.utils.text import slugify
+
+
 from users.models import UserAccount
 
 class FoodCategory(models.Model):
@@ -66,10 +69,17 @@ class Hotel(models.Model):
     hotel_description = models.TextField()
     hotel_name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
-    food_categories = models.ManyToManyField(FoodCategory, related_name='hotels')
-    hotel_category = models.ManyToManyField(HotelCategoryStars, related_name='hotels')
-    additional_services = models.ManyToManyField(AdditionalService, related_name='hotels')
-    child_services = models.ManyToManyField(ChildService, related_name='hotels')
+    #food_categories = models.ManyToManyField(FoodCategory, related_name='hotels')
+    #hotel_category = models.ManyToManyField(HotelCategoryStars, related_name='hotels')
+    #additional_services = models.ManyToManyField(AdditionalService, related_name='hotels')
+    #child_services = models.ManyToManyField(ChildService, related_name='hotels')
+    slug = models.SlugField(unique=True, default='')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.hotel_name)
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return self.hotel_name
