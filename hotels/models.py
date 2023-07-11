@@ -1,8 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
-
-
 from users.models import UserAccount
+
 
 class FoodCategory(models.Model):
     food_category_name = models.CharField(max_length=255)
@@ -174,4 +173,3 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking for {self.guest.email} at {self.hotel.hotel_name}"
-
