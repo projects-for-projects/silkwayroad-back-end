@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 from users.models import UserAccount
 
 
@@ -10,7 +11,6 @@ class FoodCategory(models.Model):
     def __str__(self):
         return self.food_category_name
 
-
 class HotelCategoryStars(models.Model):
     hotel_category_name = models.CharField(max_length=255)
     hotel_category_name_en = models.CharField(max_length=255, blank=True, null=True)
@@ -19,7 +19,6 @@ class HotelCategoryStars(models.Model):
 
     def __str__(self):
         return self.hotel_category_name
-
     
 class AdditionalService(models.Model):
     currency = models.CharField(max_length=10)
@@ -30,7 +29,6 @@ class AdditionalService(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class ChildService(models.Model):
     currency = models.CharField(max_length=10)
@@ -43,7 +41,6 @@ class ChildService(models.Model):
 
     def __str__(self):
         return self.name
-
     
 class Country(models.Model):
     country_name = models.CharField(max_length=255)
@@ -52,7 +49,6 @@ class Country(models.Model):
 
     def __str__(self):
         return self.country_name
-
      
 class City(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
@@ -63,7 +59,6 @@ class City(models.Model):
     def __str__(self):
         return self.city_name
 
-
 class Hotel(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
@@ -73,13 +68,21 @@ class Hotel(models.Model):
     hotel_description = models.TextField()
     hotel_name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
-    food_categories = models.ManyToManyField(FoodCategory, related_name='hotels')
-    hotel_category = models.ManyToManyField(HotelCategoryStars, related_name='hotels')
-    additional_services = models.ManyToManyField(AdditionalService, related_name='hotels')
-    child_services = models.ManyToManyField(ChildService, related_name='hotels')
+    #food_categories = models.ManyToManyField(FoodCategory, related_name='hotels')
+    #hotel_category = models.ManyToManyField(HotelCategoryStars, related_name='hotels')
+    #additional_services = models.ManyToManyField(AdditionalService, related_name='hotels')
+    #child_services = models.ManyToManyField(ChildService, related_name='hotels')
+    slug = models.SlugField(unique=True, default='')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.hotel_name)
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return self.hotel_name
+    
 
 
 class HotelImage(models.Model):
@@ -89,7 +92,6 @@ class HotelImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.hotel.hotel_name}"
-
     
 class Characteristics(models.Model):
     characteristics_id = models.BigAutoField(primary_key=True)
@@ -100,7 +102,6 @@ class Characteristics(models.Model):
 
     def __str__(self):
         return self.name
-
     
 class FacilitiesAndServicesRooms(models.Model):
     room_category_name = models.CharField(max_length=255)
@@ -109,7 +110,6 @@ class FacilitiesAndServicesRooms(models.Model):
 
     def __str__(self):
         return self.room_category_name    
-
     
 class Room(models.Model):
     room_id = models.BigAutoField(primary_key=True)
@@ -123,14 +123,12 @@ class Room(models.Model):
     def __str__(self):
         return self.room_name
 
-
 class RoomCharacteristics(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     characteristics = models.ForeignKey(Characteristics, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Room {self.room.room_id} - Characteristics {self.characteristics.characteristics_id}"
-
     
 class PeriodPrice(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='prices')
@@ -142,7 +140,6 @@ class PeriodPrice(models.Model):
     def __str__(self):
         return f"Price for {self.room.room_name}"
     
-
 class Category(models.Model):
     name = models.CharField(max_length=255)
     name_en = models.CharField(max_length=255, blank=True, null=True)
@@ -150,7 +147,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
+    
 
 class FacilitiesAndServicesHotels(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='facilities_and_services')
