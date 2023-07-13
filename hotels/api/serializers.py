@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from hotels.models import Room, Category, Booking, RoomCharacteristics, PeriodPrice, FacilitiesAndServicesHotels, FacilitiesAndServicesRooms, Hotel, Characteristics, Country,City, HotelImage, FoodCategory, HotelCategoryStars, AdditionalService,ChildService
+from hotels.models import *
 
 class HotelSerializer(serializers.ModelSerializer):
     class Meta:

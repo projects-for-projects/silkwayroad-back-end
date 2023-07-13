@@ -18,7 +18,7 @@ from .serializers import (
 )
 
 
-@api_view(['GET'])
+@api_view(['GET',])
 @permission_classes([])
 def api_hotel(request, slug):
     try:
@@ -30,7 +30,7 @@ def api_hotel(request, slug):
         serializer = HotelSerializer(hotel)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes([])
 def api_hotels(request):
     try:

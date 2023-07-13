@@ -1,10 +1,12 @@
-from django.urls import path, include, re_path
-from django.views.generic import TemplateView
+from django.contrib import admin
+from django.urls import path, include
+# from django.conf.urls import url
+from users.views import *
 
 urlpatterns = [
-    path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.jwt')),
-    path('auth/', include('djoser.social.urls')),
+    path('', include('users.urls')),
+    path('admin/', admin.site.urls),
+    path('users/', UserView.as_view(), name="user"),
     
     # HOTELS URLS
     path('api/hotel/', include('hotels.api.urls', 'api_hotel')),
