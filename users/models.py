@@ -3,17 +3,32 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 
 class UserAccountManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    def create_stuff_user(self, email, first_name, last_name, password=None, **extra_fields):
+
         if not email:
-            raise ValueError('Users must have an email address')
+            raise ValueError('The Email field must be set.')
 
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        stuff_user = self.model(
+            email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name,
+            **extra_fields
+        )
+        stuff_user.set_password(password)
+        stuff_user.save(using=self._db)
+        return stuff_user
 
-        user.set_password(password)
-        user.save()
+    def create_superuser(self, email, first_name, last_name, password=None, **extra_fields):
 
-        return user
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_stuff_user(email, first_name, last_name, password, **extra_fields)
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
@@ -22,6 +37,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     objects = UserAccountManager()
 
